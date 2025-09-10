@@ -1,11 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_absensi_app/presentation/home/pages/register_face_attendance.dart';
+import 'package:flutter_absensi_app/data/datasources/auth_local_datasource.dart';
+import 'package:flutter_absensi_app/presentation/home/pages/register_face_attendance_page.dart';
+import 'package:flutter_absensi_app/presentation/home/pages/setting_page.dart';
 import 'package:flutter_absensi_app/presentation/home/widgets/menu_button.dart';
 
 import '../../../core/core.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  String? faceEmbedding;
+
+  @override
+  void initState() {
+    _initializeFaceEmbedding();
+    super.initState();
+  }
+
+  Future<void> _initializeFaceEmbedding() async {
+    try {
+      final authData = await AuthLocalDatasource().getAuthData();
+      setState(() {
+        faceEmbedding = authData?.user?.faceEmbedding;
+      });
+    } catch (e) {
+      // Tangani error di sini jika ada masalah dalam mendapatkan authData
+      print('Error fetching auth data: $e');
+      setState(() {
+        faceEmbedding = null;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -139,64 +169,78 @@ class HomePage extends StatelessWidget {
                 ),
               ),
               const SpaceHeight(24.0),
-              Button.filled(
-                onPressed: () {
-                  showBottomSheet(
-                    backgroundColor: AppColors.white,
-                    context: context,
-                    builder: (context) => Container(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const SizedBox(
-                            width: 60.0,
-                            height: 8.0,
-                            child: Divider(color: AppColors.lightSheet),
-                          ),
-                          const CloseButton(),
-                          const Center(
-                            child: Text(
-                              'Oops !',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 24.0,
-                              ),
+              // * Jika faceEmbedding tidak null
+              faceEmbedding != null
+                  ? Button.filled(
+                      onPressed: () {
+                        context.push(const SettingPage());
+                      },
+                      label: 'Attendance Using Face ID',
+                      icon: Assets.icons.attendance.svg(),
+                      color: AppColors.primary,
+                    )
+                  // * Jika faceEmbedding null
+                  : Button.filled(
+                      onPressed: () {
+                        showBottomSheet(
+                          backgroundColor: AppColors.white,
+                          context: context,
+                          builder: (context) => Container(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const SizedBox(
+                                  width: 60.0,
+                                  height: 8.0,
+                                  child: Divider(color: AppColors.lightSheet),
+                                ),
+                                const CloseButton(),
+                                const Center(
+                                  child: Text(
+                                    'Oops !',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 24.0,
+                                    ),
+                                  ),
+                                ),
+                                const SpaceHeight(4.0),
+                                const Center(
+                                  child: Text(
+                                    'Aplikasi ingin mengakses Kamera',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 15.0,
+                                    ),
+                                  ),
+                                ),
+                                const SpaceHeight(36.0),
+                                Button.filled(
+                                  onPressed: () => context.pop(),
+                                  label: 'Tolak',
+                                  color: AppColors.secondary,
+                                ),
+                                const SpaceHeight(16.0),
+                                Button.filled(
+                                  onPressed: () {
+                                    context.pop();
+                                    context.push(
+                                      const RegisterFaceAttendancePage(),
+                                    );
+                                  },
+                                  label: 'Izinkan',
+                                ),
+                              ],
                             ),
                           ),
-                          const SpaceHeight(4.0),
-                          const Center(
-                            child: Text(
-                              'Aplikasi ingin mengakses Kamera',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 15.0,
-                              ),
-                            ),
-                          ),
-                          const SpaceHeight(36.0),
-                          Button.filled(
-                            onPressed: () => context.pop(),
-                            label: 'Tolak',
-                            color: AppColors.secondary,
-                          ),
-                          const SpaceHeight(16.0),
-                          Button.filled(
-                            onPressed: () {
-                              context.pop();
-                              context.push(const RegisterFaceAttendancePage());
-                            },
-                            label: 'Izinkan',
-                          ),
-                        ],
-                      ),
+                        );
+                      },
+                      label: 'Attendance Using Face ID',
+                      icon: Assets.icons.attendance.svg(),
+                      color: AppColors.red,
                     ),
-                  );
-                },
-                label: 'Attendance Using Face ID',
-                icon: Assets.icons.attendance.svg(),
-              ),
             ],
           ),
         ),

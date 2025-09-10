@@ -25,7 +25,9 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color.fromARGB(255, 37, 85, 228),
+          ),
           dividerTheme: DividerThemeData(
             color: AppColors.light.withOpacity(0.5),
           ),
@@ -35,7 +37,7 @@ class MyApp extends StatelessWidget {
           ),
           appBarTheme: AppBarTheme(
             centerTitle: true,
-            color: AppColors.white,
+            backgroundColor: AppColors.white,
             elevation: 0,
             titleTextStyle: GoogleFonts.kumbhSans(
               color: AppColors.black,
