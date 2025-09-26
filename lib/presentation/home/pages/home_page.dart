@@ -1,5 +1,7 @@
+import 'package:detect_fake_location/detect_fake_location.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_absensi_app/data/datasources/auth_local_datasource.dart';
+import 'package:flutter_absensi_app/presentation/home/pages/attendance_checkin_page.dart';
 import 'package:flutter_absensi_app/presentation/home/pages/register_face_attendance_page.dart';
 import 'package:flutter_absensi_app/presentation/home/pages/setting_page.dart';
 import 'package:flutter_absensi_app/presentation/home/widgets/menu_button.dart';
@@ -65,11 +67,30 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   const SpaceWidth(12.0),
-                  const Expanded(
-                    child: Text(
-                      'Hello, Chopper Sensei',
-                      style: TextStyle(fontSize: 18.0, color: AppColors.white),
-                      maxLines: 2,
+                  Expanded(
+                    child: FutureBuilder(
+                      future: AuthLocalDatasource().getAuthData(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Text('Loading...');
+                        } else {
+                          final user = snapshot.data?.user;
+                          return Text(
+                            'Hello, ${user?.name ?? 'Hello, Chopper Sensei'}',
+                            style: const TextStyle(
+                              fontSize: 18.0,
+                              color: AppColors.white,
+                            ),
+                            maxLines: 2,
+                          );
+                        }
+                      },
+                      // child: Text(
+                      //   'Hello, Chopper Sensei',
+                      //   style: TextStyle(fontSize: 18.0, color: AppColors.white),
+                      //   maxLines: 2,
+                      // ),
                     ),
                   ),
                   IconButton(
@@ -138,7 +159,36 @@ class _HomePageState extends State<HomePage> {
                     MenuButton(
                       label: 'Datang',
                       iconPath: Assets.icons.menu.datang.path,
-                      onPressed: () {},
+                      onPressed: () async {
+                        //Deteksi lokasi palsu
+                        bool isFakeLocation = await DetectFakeLocation()
+                            .detectFakeLocation();
+                        //Jika lokasi palsu terdeteksi
+                        if (isFakeLocation) {
+                          //Tampilkan peringatan lokasi palsu
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('Fake Location Detected'),
+                                content: const Text(
+                                  'Please disable mock location to proceed.',
+                                ),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: const Text('OK'),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        } else {
+                          context.push(const AttendanceCheckinPage());
+                        }
+                      },
                     ),
                     MenuButton(
                       label: 'Pulang',

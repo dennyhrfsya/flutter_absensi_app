@@ -7,7 +7,7 @@ import 'package:flutter_absensi_app/data/models/response/user_response_model.dar
 import 'package:http/http.dart' as http;
 
 class AuthRemoteDatasource {
-  //login
+  //API login
   Future<Either<String, AuthResponseModel>> login(
     String email,
     // String username,
@@ -31,7 +31,7 @@ class AuthRemoteDatasource {
     }
   }
 
-  //logout
+  //API logout
   Future<Either<String, String>> logout() async {
     final authData = await AuthLocalDatasource().getAuthData();
     final url = Uri.parse('${Variables.baseUrl}/api/logout');
@@ -50,7 +50,7 @@ class AuthRemoteDatasource {
     }
   }
 
-  //update profile
+  //API update profile
   Future<Either<String, UserResponseModel>> updateProfileRegisterFace(
     String embedding,
   ) async {
