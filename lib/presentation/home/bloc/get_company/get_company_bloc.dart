@@ -10,7 +10,7 @@ part 'get_company_event.dart';
 part 'get_company_state.dart';
 
 class GetCompanyBloc extends Bloc<GetCompanyEvent, GetCompanyState> {
-  final AttedanceRemoteDataSource datasource;
+  final AttendanceRemoteDatasource datasource;
   GetCompanyBloc(this.datasource) : super(const _Initial()) {
     on<_GetCompany>((event, emit) async {
       emit(const _Loading());

@@ -12,7 +12,7 @@ part 'checkout_attendance_state.dart';
 
 class CheckoutAttendanceBloc
     extends Bloc<CheckoutAttendanceEvent, CheckoutAttendanceState> {
-  final AttedanceRemoteDataSource datasource;
+  final AttendanceRemoteDatasource datasource;
   CheckoutAttendanceBloc(this.datasource) : super(const _Initial()) {
     on<_Checkout>((event, emit) async {
       emit(const _Loading());

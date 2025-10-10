@@ -8,7 +8,7 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_absensi_app/data/datasources/auth_local_datasource.dart';
 import 'package:flutter_absensi_app/data/models/response/company_response_model.dart';
 
-class AttedanceRemoteDataSource {
+class AttendanceRemoteDatasource {
   //API get company profile
   Future<Either<String, CompanyResponseModel>> getCompany() async {
     final authData = await AuthLocalDatasource().getAuthData();

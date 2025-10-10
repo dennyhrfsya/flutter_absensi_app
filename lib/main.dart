@@ -5,8 +5,10 @@ import 'package:flutter_absensi_app/presentation/auth/bloc/login/login_bloc.dart
 import 'package:flutter_absensi_app/presentation/auth/bloc/logout/logout_bloc.dart';
 import 'package:flutter_absensi_app/presentation/auth/pages/splash_page.dart';
 import 'package:flutter_absensi_app/presentation/home/bloc/checkin_attendance/checkin_attendance_bloc.dart';
+import 'package:flutter_absensi_app/presentation/home/bloc/checkout_attendance/checkout_attendance_bloc.dart';
 import 'package:flutter_absensi_app/presentation/home/bloc/get_company/get_company_bloc.dart';
 import 'package:flutter_absensi_app/presentation/home/bloc/is_checkedin/is_checkedin_bloc.dart';
+import 'package:flutter_absensi_app/presentation/home/bloc/update_user_register_face/update_user_register_face_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'core/core.dart';
@@ -23,26 +25,26 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (context) => LoginBloc(AuthRemoteDatasource()),
-        ), // BlocProvider for LoginBloc
-        BlocProvider(
-          create: (context) => LogoutBloc(AuthRemoteDatasource()),
-        ), // BlocProvider for LogoutBloc
-        BlocProvider(
-          create: (context) => GetCompanyBloc(AttedanceRemoteDataSource()),
-        ), // BlocProvider for GetCompanyBloc
-        BlocProvider(
-          create: (context) => IsCheckedinBloc(AttedanceRemoteDataSource()),
-        ), // BlocProvider for IsCheckedinBloc
+        BlocProvider(create: (context) => LoginBloc(AuthRemoteDatasource())),
+        BlocProvider(create: (context) => LogoutBloc(AuthRemoteDatasource())),
         BlocProvider(
           create: (context) =>
-              CheckinAttendanceBloc(AttedanceRemoteDataSource()),
-        ), // BlocProvider for CheckinAttendanceBloc
+              UpdateUserRegisterFaceBloc(AuthRemoteDatasource()),
+        ),
+        BlocProvider(
+          create: (context) => GetCompanyBloc(AttendanceRemoteDatasource()),
+        ),
+        BlocProvider(
+          create: (context) => IsCheckedinBloc(AttendanceRemoteDatasource()),
+        ),
         BlocProvider(
           create: (context) =>
-              CheckinAttendanceBloc(AttedanceRemoteDataSource()),
-        ), // BlocProvider for CheckoutAttendanceBloc
+              CheckinAttendanceBloc(AttendanceRemoteDatasource()),
+        ),
+        BlocProvider(
+          create: (context) =>
+              CheckoutAttendanceBloc(AttendanceRemoteDatasource()),
+        ),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',

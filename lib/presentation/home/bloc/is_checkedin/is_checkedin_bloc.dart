@@ -9,7 +9,7 @@ part 'is_checkedin_event.dart';
 part 'is_checkedin_state.dart';
 
 class IsCheckedinBloc extends Bloc<IsCheckedinEvent, IsCheckedinState> {
-  final AttedanceRemoteDataSource datasource;
+  final AttendanceRemoteDatasource datasource;
   IsCheckedinBloc(this.datasource) : super(const _Initial()) {
     on<IsCheckedinEvent>((event, emit) async {
       emit(const _Loading());
