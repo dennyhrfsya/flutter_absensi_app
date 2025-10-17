@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_absensi_app/core/ml/recognition_embedding.dart';
 import 'package:flutter_absensi_app/core/ml/recognizer.dart';
 import 'package:flutter_absensi_app/presentation/home/bloc/checkin_attendance/checkin_attendance_bloc.dart';
+import 'package:flutter_absensi_app/presentation/home/pages/attendance_success_page.dart';
 import 'package:flutter_absensi_app/presentation/home/pages/location_page.dart';
 import 'package:flutter_absensi_app/presentation/home/widgets/face_detector_painter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -439,11 +440,11 @@ class _AttendanceCheckinPageState extends State<AttendanceCheckinPage> {
                                 );
                               },
                               loaded: (responseModel) {
-                                // context.pushReplacement(
-                                //   const AttendanceSuccessPage(
-                                //     status: 'Berhasil Checkin',
-                                //   ),
-                                // );
+                                context.pushReplacement(
+                                  const AttendanceSuccessPage(
+                                    status: 'Berhasil Checkin',
+                                  ),
+                                );
                               },
                             );
                           },
