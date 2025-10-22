@@ -1,12 +1,16 @@
-import 'package:detect_fake_location/detect_fake_location.dart';
+// import 'package:detect_fake_location/detect_fake_location.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_absensi_app/data/datasources/auth_local_datasource.dart';
+import 'package:flutter_absensi_app/presentation/home/bloc/is_checkedin/is_checkedin_bloc.dart';
 import 'package:flutter_absensi_app/presentation/home/pages/attendance_checkin_page.dart';
+import 'package:flutter_absensi_app/presentation/home/pages/attendance_checkout_page.dart';
 import 'package:flutter_absensi_app/presentation/home/pages/register_face_attendance_page.dart';
 import 'package:flutter_absensi_app/presentation/home/pages/setting_page.dart';
-import 'package:flutter_absensi_app/presentation/home/widgets/menu_button.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/core.dart';
+import '../widgets/menu_button.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -21,6 +25,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     _initializeFaceEmbedding();
+    context.read<IsCheckedinBloc>().add(const IsCheckedinEvent.isCheckedIn());
     super.initState();
   }
 
@@ -34,7 +39,7 @@ class _HomePageState extends State<HomePage> {
       // Tangani error di sini jika ada masalah dalam mendapatkan authData
       print('Error fetching auth data: $e');
       setState(() {
-        faceEmbedding = null;
+        faceEmbedding = null; // Atur faceEmbedding ke null jika ada kesalahan
       });
     }
   }
@@ -88,7 +93,10 @@ class _HomePageState extends State<HomePage> {
                       },
                       // child: Text(
                       //   'Hello, Chopper Sensei',
-                      //   style: TextStyle(fontSize: 18.0, color: AppColors.white),
+                      //   style: TextStyle(
+                      //     fontSize: 18.0,
+                      //     color: AppColors.white,
+                      //   ),
                       //   maxLines: 2,
                       // ),
                     ),
@@ -150,66 +158,139 @@ class _HomePageState extends State<HomePage> {
                 child: GridView(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    crossAxisSpacing: 30.0,
-                    mainAxisSpacing: 30.0,
+                    crossAxisSpacing: 16.0,
+                    mainAxisSpacing: 16.0,
                   ),
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   children: [
-                    MenuButton(
-                      label: 'Datang',
-                      iconPath: Assets.icons.menu.datang.path,
-                      onPressed: () async {
-                        //Deteksi lokasi palsu
-                        bool isFakeLocation = await DetectFakeLocation()
-                            .detectFakeLocation();
-                        //Jika lokasi palsu terdeteksi
-                        if (isFakeLocation) {
-                          //Tampilkan peringatan lokasi palsu
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: const Text('Fake Location Detected'),
-                                content: const Text(
-                                  'Please disable mock location to proceed.',
+                    BlocConsumer<IsCheckedinBloc, IsCheckedinState>(
+                      listener: (context, state) {
+                        // TODO: implement listener
+                      },
+                      builder: (context, state) {
+                        final isCheckin = state.maybeWhen(
+                          orElse: () => false,
+                          success: (data) => data.isCheckedin,
+                        );
+                        return MenuButton(
+                          label: 'Datang',
+                          iconPath: Assets.icons.menu.datang.path,
+                          onPressed: () async {
+                            // Deteksi lokasi palsu
+                            // bool isFakeLocation = await DetectFakeLocation()
+                            //     .detectFakeLocation();
+                            // // Jika lokasi palsu terdeteksi
+                            // if (isFakeLocation) {
+                            //   // Tampilkan peringatan lokasi palsu
+                            //   showDialog(
+                            //     context: context,
+                            //     builder: (BuildContext context) {
+                            //       return AlertDialog(
+                            //         title: const Text('Fake Location Detected'),
+                            //         content: const Text(
+                            //           'Please disable fake location to proceed.',
+                            //         ),
+                            //         actions: <Widget>[
+                            //           TextButton(
+                            //             child: const Text('OK'),
+                            //             onPressed: () {
+                            //               Navigator.of(
+                            //                 context,
+                            //               ).pop(); // Tutup dialog
+                            //             },
+                            //           ),
+                            //         ],
+                            //       );
+                            //     },
+                            //   );
+                            // } else {
+                            if (isCheckin) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Anda sudah checkin'),
+                                  backgroundColor: AppColors.red,
                                 ),
-                                actions: <Widget>[
-                                  TextButton(
-                                    child: const Text('OK'),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                ],
                               );
-                            },
-                          );
-                        } else {
-                          context.push(const AttendanceCheckinPage());
-                        }
+                            } else {
+                              // masuk page checkin
+                              context.push(const AttendanceCheckinPage());
+                            }
+                          },
+                          // },
+                        );
                       },
                     ),
-                    MenuButton(
-                      label: 'Pulang',
-                      iconPath: Assets.icons.menu.pulang.path,
-                      onPressed: () {},
+                    BlocBuilder<IsCheckedinBloc, IsCheckedinState>(
+                      builder: (context, state) {
+                        final isCheckout = state.maybeWhen(
+                          orElse: () => false,
+                          success: (data) => data.isCheckedout,
+                        );
+                        final isCheckin = state.maybeWhen(
+                          orElse: () => false,
+                          success: (data) => data.isCheckedin,
+                        );
+                        return MenuButton(
+                          label: 'Pulang',
+                          iconPath: Assets.icons.menu.pulang.path,
+                          onPressed: () async {
+                            // Deteksi lokasi palsu
+                            // bool isFakeLocation = await DetectFakeLocation()
+                            //     .detectFakeLocation();
+                            // Jika lokasi palsu terdeteksi
+                            // if (isFakeLocation) {
+                            //   // Tampilkan peringatan lokasi palsu
+                            //   showDialog(
+                            //     context: context,
+                            //     builder: (BuildContext context) {
+                            //       return AlertDialog(
+                            //         title: const Text('Fake Location Detected'),
+                            //         content: const Text(
+                            //           'Please disable fake location to proceed.',
+                            //         ),
+                            //         actions: <Widget>[
+                            //           TextButton(
+                            //             child: const Text('OK'),
+                            //             onPressed: () {
+                            //               Navigator.of(
+                            //                 context,
+                            //               ).pop(); // Tutup dialog
+                            //             },
+                            //           ),
+                            //         ],
+                            //       );
+                            //     },
+                            //   );
+                            // } else {
+                            // masuk page checkin
+                            if (!isCheckin) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Anda belum melakukan checkin'),
+                                  backgroundColor: AppColors.red,
+                                ),
+                              );
+                            } else if (isCheckout) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Anda sudah checkout'),
+                                  backgroundColor: AppColors.red,
+                                ),
+                              );
+                            } else {
+                              context.push(const AttendanceCheckoutPage());
+                            }
+                          },
+                          // },
+                        );
+                      },
                     ),
-                    // MenuButton(
-                    //   label: 'Jadwal',
-                    //   iconPath: Assets.icons.menu.jadwal.path,
-                    //   onPressed: () {},
-                    // ),
                     MenuButton(
                       label: 'Izin',
                       iconPath: Assets.icons.menu.izin.path,
                       onPressed: () {},
                     ),
-                    // MenuButton(
-                    //   label: 'Lembur',
-                    //   iconPath: Assets.icons.menu.lembur.path,
-                    //   onPressed: () {},
-                    // ),
                     MenuButton(
                       label: 'Catatan',
                       iconPath: Assets.icons.menu.catatan.path,
@@ -219,7 +300,6 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               const SpaceHeight(24.0),
-              // * Jika faceEmbedding tidak null
               faceEmbedding != null
                   ? Button.filled(
                       onPressed: () {
@@ -229,7 +309,6 @@ class _HomePageState extends State<HomePage> {
                       icon: Assets.icons.attendance.svg(),
                       color: AppColors.primary,
                     )
-                  // * Jika faceEmbedding null
                   : Button.filled(
                       onPressed: () {
                         showBottomSheet(
@@ -277,7 +356,7 @@ class _HomePageState extends State<HomePage> {
                                   onPressed: () {
                                     context.pop();
                                     context.push(
-                                      const RegisterFaceAttendancePage(),
+                                      const RegisterFaceAttendencePage(),
                                     );
                                   },
                                   label: 'Izinkan',

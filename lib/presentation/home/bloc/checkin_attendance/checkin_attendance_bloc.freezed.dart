@@ -122,11 +122,11 @@ return checkin(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  started,TResult Function( String latitude,  String longitude)?  checkin,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  started,TResult Function( String latitute,  String longitude)?  checkin,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Started() when started != null:
 return started();case _Checkin() when checkin != null:
-return checkin(_that.latitude,_that.longitude);case _:
+return checkin(_that.latitute,_that.longitude);case _:
   return orElse();
 
 }
@@ -144,11 +144,11 @@ return checkin(_that.latitude,_that.longitude);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  started,required TResult Function( String latitude,  String longitude)  checkin,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  started,required TResult Function( String latitute,  String longitude)  checkin,}) {final _that = this;
 switch (_that) {
 case _Started():
 return started();case _Checkin():
-return checkin(_that.latitude,_that.longitude);case _:
+return checkin(_that.latitute,_that.longitude);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -165,11 +165,11 @@ return checkin(_that.latitude,_that.longitude);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  started,TResult? Function( String latitude,  String longitude)?  checkin,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  started,TResult? Function( String latitute,  String longitude)?  checkin,}) {final _that = this;
 switch (_that) {
 case _Started() when started != null:
 return started();case _Checkin() when checkin != null:
-return checkin(_that.latitude,_that.longitude);case _:
+return checkin(_that.latitute,_that.longitude);case _:
   return null;
 
 }
@@ -213,10 +213,10 @@ String toString() {
 
 
 class _Checkin implements CheckinAttendanceEvent {
-  const _Checkin(this.latitude, this.longitude);
+  const _Checkin(this.latitute, this.longitude);
   
 
- final  String latitude;
+ final  String latitute;
  final  String longitude;
 
 /// Create a copy of CheckinAttendanceEvent
@@ -229,16 +229,16 @@ _$CheckinCopyWith<_Checkin> get copyWith => __$CheckinCopyWithImpl<_Checkin>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Checkin&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Checkin&&(identical(other.latitute, latitute) || other.latitute == latitute)&&(identical(other.longitude, longitude) || other.longitude == longitude));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,latitude,longitude);
+int get hashCode => Object.hash(runtimeType,latitute,longitude);
 
 @override
 String toString() {
-  return 'CheckinAttendanceEvent.checkin(latitude: $latitude, longitude: $longitude)';
+  return 'CheckinAttendanceEvent.checkin(latitute: $latitute, longitude: $longitude)';
 }
 
 
@@ -249,7 +249,7 @@ abstract mixin class _$CheckinCopyWith<$Res> implements $CheckinAttendanceEventC
   factory _$CheckinCopyWith(_Checkin value, $Res Function(_Checkin) _then) = __$CheckinCopyWithImpl;
 @useResult
 $Res call({
- String latitude, String longitude
+ String latitute, String longitude
 });
 
 
@@ -266,9 +266,9 @@ class __$CheckinCopyWithImpl<$Res>
 
 /// Create a copy of CheckinAttendanceEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? latitude = null,Object? longitude = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? latitute = null,Object? longitude = null,}) {
   return _then(_Checkin(
-null == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
+null == latitute ? _self.latitute : latitute // ignore: cast_nullable_to_non_nullable
 as String,null == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
 as String,
   ));

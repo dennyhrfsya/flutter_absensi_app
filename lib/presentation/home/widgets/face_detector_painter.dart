@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_absensi_app/core/ml/recognition_embedding.dart';
 
 class FaceDetectorPainter extends CustomPainter {
-  FaceDetectorPainter(this.absoluteImageSize, this.faces, this.camDire2);
+  FaceDetectorPainter(
+    this.absoluteImageSize,
+    this.faces,
+    this.camDire2,
+  );
 
   final Size absoluteImageSize;
 

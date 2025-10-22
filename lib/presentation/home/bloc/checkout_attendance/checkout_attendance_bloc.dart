@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:bloc/bloc.dart';
 import 'package:flutter_absensi_app/data/models/request/checkinout_request_model.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -13,15 +12,20 @@ part 'checkout_attendance_state.dart';
 class CheckoutAttendanceBloc
     extends Bloc<CheckoutAttendanceEvent, CheckoutAttendanceState> {
   final AttendanceRemoteDatasource datasource;
-  CheckoutAttendanceBloc(this.datasource) : super(const _Initial()) {
+  CheckoutAttendanceBloc(
+    this.datasource,
+  ) : super(const _Initial()) {
     on<_Checkout>((event, emit) async {
       emit(const _Loading());
       final requestModel = CheckInOutRequestModel(
-        latitude: event.latitude,
+        latitude: event.latitute,
         longitude: event.longitude,
       );
       final result = await datasource.checkout(requestModel);
-      result.fold((l) => emit(_Error(l)), (r) => emit(_Loaded(r)));
+      result.fold(
+        (l) => emit(_Error(l)),
+        (r) => emit(_Loaded(r)),
+      );
     });
   }
 }

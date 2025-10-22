@@ -6,7 +6,11 @@ import '../../../core/core.dart';
 class LocationPage extends StatefulWidget {
   final double? latitude;
   final double? longitude;
-  const LocationPage({super.key, this.latitude, this.longitude});
+  const LocationPage({
+    super.key,
+    this.latitude,
+    this.longitude,
+  });
 
   @override
   State<LocationPage> createState() => _LocationPageState();
@@ -32,7 +36,9 @@ class _LocationPageState extends State<LocationPage> {
           SizedBox(
             child: widget.latitude == null
                 ? const Center(
-                    child: CircularProgressIndicator(color: AppColors.primary),
+                    child: CircularProgressIndicator(
+                      color: AppColors.primary,
+                    ),
                   )
                 : GoogleMap(
                     onMapCreated: _onMapCreated,

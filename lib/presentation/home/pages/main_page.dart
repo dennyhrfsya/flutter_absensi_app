@@ -20,11 +20,13 @@ class _MainPageState extends State<MainPage> {
     const SettingPage(),
     const Center(child: Text('This is profile page')),
   ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(index: _selectedIndex, children: _widgets),
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _widgets,
+      ),
       bottomNavigationBar: Container(
         padding: const EdgeInsets.only(bottom: 10.0),
         decoration: BoxDecoration(

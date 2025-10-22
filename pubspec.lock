@@ -273,14 +273,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.10.1"
-  detect_fake_location:
-    dependency: "direct main"
-    description:
-      name: detect_fake_location
-      sha256: "85be2719d7b101eb82df3621017fcd9756122ff0365c6ec434f1ab9443acf510"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.2+1"
   fake_async:
     dependency: transitive
     description:
