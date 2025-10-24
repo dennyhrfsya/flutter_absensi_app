@@ -1,15 +1,9 @@
-import 'dart:io';
-
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_absensi_app/core/assets/assets.gen.dart';
-import 'package:flutter_absensi_app/core/components/spaces.dart';
-import 'package:flutter_absensi_app/core/constants/colors.dart';
 import 'package:flutter_absensi_app/core/ml/recognition_embedding.dart';
 import 'package:flutter_absensi_app/core/ml/recognizer.dart';
 import 'package:flutter_absensi_app/data/datasources/auth_local_datasource.dart';
-import 'package:flutter_absensi_app/presentation/auth/bloc/logout/logout_bloc.dart';
 import 'package:flutter_absensi_app/presentation/home/bloc/update_user_register_face/update_user_register_face_bloc.dart';
 import 'package:flutter_absensi_app/presentation/home/pages/main_page.dart';
 import 'package:flutter_absensi_app/presentation/home/widgets/face_detector_painter.dart';
@@ -50,30 +44,31 @@ class _RegisterFaceAttendencePageState
 
   bool isBusy = false;
 
-//   Future<XFile> convertImageToXFile(img.Image image) async {
-//   // Get a temporary directory path
-//   String tempDir = (await getTemporaryDirectory()).path;
+  //   Future<XFile> convertImageToXFile(img.Image image) async {
+  //   // Get a temporary directory path
+  //   String tempDir = (await getTemporaryDirectory()).path;
 
-//   // Create a file path within the temporary directory
-//   String filePath = '$tempDir/image.jpg';
+  //   // Create a file path within the temporary directory
+  //   String filePath = '$tempDir/image.jpg';
 
-//   // Save the image to the file path
-//   File file = File(filePath);
-//   await file.writeAsBytes(img.encodeJpg(image));
+  //   // Save the image to the file path
+  //   File file = File(filePath);
+  //   await file.writeAsBytes(img.encodeJpg(image));
 
-//   // Create an XFile from the saved file
-//   XFile xFile = XFile(filePath);
+  //   // Create an XFile from the saved file
+  //   XFile xFile = XFile(filePath);
 
-//   return xFile;
-// }
+  //   return xFile;
+  // }
 
   @override
   void initState() {
     super.initState();
 
-//TODO initialize face detector
+    //TODO initialize face detector
     detector = FaceDetector(
-        options: FaceDetectorOptions(performanceMode: FaceDetectorMode.fast));
+      options: FaceDetectorOptions(performanceMode: FaceDetectorMode.fast),
+    );
 
     //TODO initialize face recognizer
     recognizer = Recognizer();
@@ -83,10 +78,7 @@ class _RegisterFaceAttendencePageState
 
   void _initializeCamera() async {
     _availableCameras = await availableCameras();
-    _controller = CameraController(
-      description,
-      ResolutionPreset.high,
-    );
+    _controller = CameraController(description, ResolutionPreset.high);
 
     // size = _controller!.value.previewSize!;
 
@@ -116,17 +108,22 @@ class _RegisterFaceAttendencePageState
       allBytes.putUint8List(plane.bytes);
     }
     final bytes = allBytes.done().buffer.asUint8List();
-    final Size imageSize =
-        Size(frame!.width.toDouble(), frame!.height.toDouble());
+    final Size imageSize = Size(
+      frame!.width.toDouble(),
+      frame!.height.toDouble(),
+    );
     final camera = description;
-    final imageRotation =
-        InputImageRotationValue.fromRawValue(camera.sensorOrientation);
+    final imageRotation = InputImageRotationValue.fromRawValue(
+      camera.sensorOrientation,
+    );
 
-    final inputImageFormat =
-        InputImageFormatValue.fromRawValue(frame!.format.raw);
+    final inputImageFormat = InputImageFormatValue.fromRawValue(
+      frame!.format.raw,
+    );
 
-    final int bytesPerRow =
-        frame?.planes.isNotEmpty == true ? frame!.planes.first.bytesPerRow : 0;
+    final int bytesPerRow = frame?.planes.isNotEmpty == true
+        ? frame!.planes.first.bytesPerRow
+        : 0;
 
     final inputImageMetaData = InputImageMetadata(
       size: imageSize,
@@ -135,8 +132,10 @@ class _RegisterFaceAttendencePageState
       bytesPerRow: bytesPerRow,
     );
 
-    final inputImage =
-        InputImage.fromBytes(bytes: bytes, metadata: inputImageMetaData);
+    final inputImage = InputImage.fromBytes(
+      bytes: bytes,
+      metadata: inputImageMetaData,
+    );
 
     return inputImage;
   }
@@ -199,30 +198,33 @@ class _RegisterFaceAttendencePageState
 
     //TODO convert CameraImage to Image and rotate it so that our frame will be in a portrait
     image = convertYUV420ToImage(frame!);
-    image = img.copyRotate(image!,
-        angle: camDirec == CameraLensDirection.front ? 270 : 90);
+    image = img.copyRotate(
+      image!,
+      angle: camDirec == CameraLensDirection.front ? 270 : 90,
+    );
 
     for (Face face in faces) {
       Rect faceRect = face.boundingBox;
       //TODO crop face
-      img.Image croppedFace = img.copyCrop(image!,
-          x: faceRect.left.toInt(),
-          y: faceRect.top.toInt(),
-          width: faceRect.width.toInt(),
-          height: faceRect.height.toInt());
+      img.Image croppedFace = img.copyCrop(
+        image!,
+        x: faceRect.left.toInt(),
+        y: faceRect.top.toInt(),
+        width: faceRect.width.toInt(),
+        height: faceRect.height.toInt(),
+      );
 
       //TODO pass cropped face to face recognition model
-      RecognitionEmbedding recognition =
-          recognizer.recognize(croppedFace, face.boundingBox);
+      RecognitionEmbedding recognition = recognizer.recognize(
+        croppedFace,
+        face.boundingBox,
+      );
 
       recognitions.add(recognition);
 
       //TODO show face registration dialogue
       if (register) {
-        showFaceRegistrationDialogue(
-          croppedFace,
-          recognition,
-        );
+        showFaceRegistrationDialogue(croppedFace, recognition);
         register = false;
       }
     }
@@ -234,7 +236,9 @@ class _RegisterFaceAttendencePageState
   }
 
   void showFaceRegistrationDialogue(
-      img.Image croppedFace, RecognitionEmbedding recognition) {
+    img.Image croppedFace,
+    RecognitionEmbedding recognition,
+  ) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -246,9 +250,7 @@ class _RegisterFaceAttendencePageState
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(
-                height: 20,
-              ),
+              const SizedBox(height: 20),
               Image.memory(
                 Uint8List.fromList(img.encodeBmp(croppedFace)),
                 width: 200,
@@ -256,49 +258,51 @@ class _RegisterFaceAttendencePageState
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: BlocConsumer<UpdateUserRegisterFaceBloc,
-                    UpdateUserRegisterFaceState>(
-                  listener: (context, state) {
-                    state.maybeWhen(
-                      orElse: () {},
-                      error: (message) {
-                        return ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(message),
-                          ),
+                child:
+                    BlocConsumer<
+                      UpdateUserRegisterFaceBloc,
+                      UpdateUserRegisterFaceState
+                    >(
+                      listener: (context, state) {
+                        state.maybeWhen(
+                          orElse: () {},
+                          error: (message) {
+                            return ScaffoldMessenger.of(
+                              context,
+                            ).showSnackBar(SnackBar(content: Text(message)));
+                          },
+                          success: (data) {
+                            // AuthLocalDataSource()
+                            //     .reSaveAuthData(responseModel.user!);
+                            // Navigator.pop(context);
+                            AuthLocalDatasource().updateAuthData(data);
+                            context.pushReplacement(const MainPage());
+                          },
                         );
                       },
-                      success: (data) {
-                        // AuthLocalDataSource()
-                        //     .reSaveAuthData(responseModel.user!);
-                        // Navigator.pop(context);
-                        AuthLocalDatasource().updateAuthData(data);
-                        context.pushReplacement(const MainPage());
-                      },
-                    );
-                  },
-                  builder: (context, state) {
-                    return state.maybeWhen(
-                      orElse: () {
-                        return Button.filled(
-                            onPressed: () async {
-                              // Image to XFile to be able to pass it to the bloc
+                      builder: (context, state) {
+                        return state.maybeWhen(
+                          orElse: () {
+                            return Button.filled(
+                              onPressed: () async {
+                                // Image to XFile to be able to pass it to the bloc
 
-                              // final XFile newCroppedFaced = XFile(croppedFace.);
-                              context.read<UpdateUserRegisterFaceBloc>().add(
-                                  UpdateUserRegisterFaceEvent
-                                      .updateProfileRegisterFace(
-                                          recognition.embedding.join(','),
-                                          null));
-                            },
-                            label: 'Register');
+                                // final XFile newCroppedFaced = XFile(croppedFace.);
+                                context.read<UpdateUserRegisterFaceBloc>().add(
+                                  UpdateUserRegisterFaceEvent.updateProfileRegisterFace(
+                                    recognition.embedding.join(','),
+                                    null,
+                                  ),
+                                );
+                              },
+                              label: 'Register',
+                            );
+                          },
+                          loading: () =>
+                              const Center(child: CircularProgressIndicator()),
+                        );
                       },
-                      loading: () => const Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    );
-                  },
-                ),
+                    ),
               ),
             ],
           ),
@@ -341,20 +345,19 @@ class _RegisterFaceAttendencePageState
       _controller!.value.previewSize!.height,
       _controller!.value.previewSize!.width,
     );
-    CustomPainter painter =
-        FaceDetectorPainter(imageSize, _scanResults, camDirec);
-    return CustomPaint(
-      painter: painter,
+    CustomPainter painter = FaceDetectorPainter(
+      imageSize,
+      _scanResults,
+      camDirec,
     );
+    return CustomPaint(painter: painter);
   }
 
   @override
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
     if (_controller == null) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     return SafeArea(
       child: Scaffold(
@@ -371,11 +374,12 @@ class _RegisterFaceAttendencePageState
               ),
             ),
             Positioned(
-                top: 0.0,
-                left: 0.0,
-                width: size.width,
-                height: size.height,
-                child: buildResult()),
+              top: 0.0,
+              left: 0.0,
+              width: size.width,
+              height: size.height,
+              child: buildResult(),
+            ),
             Positioned(
               bottom: 5.0,
               left: 0.0,
@@ -394,14 +398,11 @@ class _RegisterFaceAttendencePageState
                         const Spacer(),
                         IconButton(
                           onPressed: _takePicture,
-                          icon: const Icon(
-                            Icons.circle,
-                            size: 70.0,
-                          ),
+                          icon: const Icon(Icons.circle, size: 70.0),
                           color: AppColors.red,
                         ),
                         const Spacer(),
-                        const SpaceWidth(48.0)
+                        const SpaceWidth(48.0),
                       ],
                     ),
                   ],

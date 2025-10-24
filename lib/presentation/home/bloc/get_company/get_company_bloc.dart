@@ -13,7 +13,7 @@ class GetCompanyBloc extends Bloc<GetCompanyEvent, GetCompanyState> {
   GetCompanyBloc(this.datasource) : super(const _Initial()) {
     on<_GetCompany>((event, emit) async {
       emit(const _Loading());
-      final result = await datasource.getCompany();
+      final result = await datasource.getCompanyProfile();
       result.fold((l) => emit(_Error(l)), (r) => emit(_Success(r.company!)));
     });
   }

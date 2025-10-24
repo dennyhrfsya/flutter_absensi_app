@@ -8,7 +8,6 @@ import 'package:flutter_absensi_app/core/ml/recognizer.dart';
 import 'package:flutter_absensi_app/presentation/home/bloc/checkout_attendance/checkout_attendance_bloc.dart';
 import 'package:flutter_absensi_app/presentation/home/pages/attendance_success_page.dart';
 import 'package:flutter_absensi_app/presentation/home/pages/location_page.dart';
-import 'package:flutter_absensi_app/presentation/home/pages/main_page.dart';
 import 'package:flutter_absensi_app/presentation/home/widgets/face_detector_painter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';

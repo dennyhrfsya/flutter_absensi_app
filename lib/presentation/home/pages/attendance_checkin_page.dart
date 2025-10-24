@@ -7,7 +7,6 @@ import 'package:flutter_absensi_app/core/ml/recognizer.dart';
 import 'package:flutter_absensi_app/presentation/home/bloc/checkin_attendance/checkin_attendance_bloc.dart';
 import 'package:flutter_absensi_app/presentation/home/pages/attendance_success_page.dart';
 import 'package:flutter_absensi_app/presentation/home/pages/location_page.dart';
-import 'package:flutter_absensi_app/presentation/home/pages/main_page.dart';
 import 'package:flutter_absensi_app/presentation/home/widgets/face_detector_painter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
@@ -46,7 +45,8 @@ class _AttendanceCheckinPageState extends State<AttendanceCheckinPage> {
 
     //TODO initialize face detector
     detector = FaceDetector(
-        options: FaceDetectorOptions(performanceMode: FaceDetectorMode.fast));
+      options: FaceDetectorOptions(performanceMode: FaceDetectorMode.fast),
+    );
 
     //TODO initialize face recognizer
     recognizer = Recognizer();
@@ -101,21 +101,27 @@ class _AttendanceCheckinPageState extends State<AttendanceCheckinPage> {
 
     //TODO convert CameraImage to Image and rotate it so that our frame will be in a portrait
     image = convertYUV420ToImage(frame!);
-    image = img.copyRotate(image!,
-        angle: camDirec == CameraLensDirection.front ? 270 : 90);
+    image = img.copyRotate(
+      image!,
+      angle: camDirec == CameraLensDirection.front ? 270 : 90,
+    );
 
     for (Face face in faces) {
       Rect faceRect = face.boundingBox;
       //TODO crop face
-      img.Image croppedFace = img.copyCrop(image!,
-          x: faceRect.left.toInt(),
-          y: faceRect.top.toInt(),
-          width: faceRect.width.toInt(),
-          height: faceRect.height.toInt());
+      img.Image croppedFace = img.copyCrop(
+        image!,
+        x: faceRect.left.toInt(),
+        y: faceRect.top.toInt(),
+        width: faceRect.width.toInt(),
+        height: faceRect.height.toInt(),
+      );
 
       //TODO pass cropped face to face recognition model
-      RecognitionEmbedding recognition =
-          recognizer.recognize(croppedFace, face.boundingBox);
+      RecognitionEmbedding recognition = recognizer.recognize(
+        croppedFace,
+        face.boundingBox,
+      );
 
       recognitions.add(recognition);
 
@@ -196,17 +202,22 @@ class _AttendanceCheckinPageState extends State<AttendanceCheckinPage> {
       allBytes.putUint8List(plane.bytes);
     }
     final bytes = allBytes.done().buffer.asUint8List();
-    final Size imageSize =
-        Size(frame!.width.toDouble(), frame!.height.toDouble());
+    final Size imageSize = Size(
+      frame!.width.toDouble(),
+      frame!.height.toDouble(),
+    );
     final camera = description;
-    final imageRotation =
-        InputImageRotationValue.fromRawValue(camera.sensorOrientation);
+    final imageRotation = InputImageRotationValue.fromRawValue(
+      camera.sensorOrientation,
+    );
 
-    final inputImageFormat =
-        InputImageFormatValue.fromRawValue(frame!.format.raw);
+    final inputImageFormat = InputImageFormatValue.fromRawValue(
+      frame!.format.raw,
+    );
 
-    final int bytesPerRow =
-        frame?.planes.isNotEmpty == true ? frame!.planes.first.bytesPerRow : 0;
+    final int bytesPerRow = frame?.planes.isNotEmpty == true
+        ? frame!.planes.first.bytesPerRow
+        : 0;
 
     final inputImageMetaData = InputImageMetadata(
       size: imageSize,
@@ -215,8 +226,10 @@ class _AttendanceCheckinPageState extends State<AttendanceCheckinPage> {
       bytesPerRow: bytesPerRow,
     );
 
-    final inputImage =
-        InputImage.fromBytes(bytes: bytes, metadata: inputImageMetaData);
+    final inputImage = InputImage.fromBytes(
+      bytes: bytes,
+      metadata: inputImageMetaData,
+    );
 
     return inputImage;
   }
@@ -224,9 +237,11 @@ class _AttendanceCheckinPageState extends State<AttendanceCheckinPage> {
   void _takeAbsen() async {
     if (mounted) {
       context.read<CheckinAttendanceBloc>().add(
-            CheckinAttendanceEvent.checkin(
-                latitude.toString(), longitude.toString()),
-          );
+        CheckinAttendanceEvent.checkin(
+          latitude.toString(),
+          longitude.toString(),
+        ),
+      );
     }
   }
 
@@ -255,11 +270,12 @@ class _AttendanceCheckinPageState extends State<AttendanceCheckinPage> {
       _controller!.value.previewSize!.height,
       _controller!.value.previewSize!.width,
     );
-    CustomPainter painter =
-        FaceDetectorPainter(imageSize, _scanResults, camDirec);
-    return CustomPaint(
-      painter: painter,
+    CustomPainter painter = FaceDetectorPainter(
+      imageSize,
+      _scanResults,
+      camDirec,
     );
+    return CustomPaint(painter: painter);
   }
 
   double? latitude;
@@ -297,7 +313,8 @@ class _AttendanceCheckinPageState extends State<AttendanceCheckinPage> {
     } on PlatformException catch (e) {
       if (e.code == 'IO_ERROR') {
         debugPrint(
-            'A network error occurred trying to lookup the supplied coordinates: ${e.message}');
+          'A network error occurred trying to lookup the supplied coordinates: ${e.message}',
+        );
       } else {
         debugPrint('Failed to lookup coordinates: ${e.message}');
       }
@@ -310,9 +327,7 @@ class _AttendanceCheckinPageState extends State<AttendanceCheckinPage> {
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
     if (_controller == null) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     return SafeArea(
       child: Scaffold(
@@ -329,11 +344,12 @@ class _AttendanceCheckinPageState extends State<AttendanceCheckinPage> {
               ),
             ),
             Positioned(
-                top: 0.0,
-                left: 0.0,
-                width: size.width,
-                height: size.height,
-                child: buildResult()),
+              top: 0.0,
+              left: 0.0,
+              width: size.width,
+              height: size.height,
+              child: buildResult(),
+            ),
             Positioned(
               top: 20.0,
               left: 40.0,
@@ -383,21 +399,22 @@ class _AttendanceCheckinPageState extends State<AttendanceCheckinPage> {
                               ),
                               Text(
                                 'Kantor',
-                                style: TextStyle(
-                                  color: AppColors.white,
-                                ),
+                                style: TextStyle(color: AppColors.white),
                               ),
                             ],
                           ),
                           GestureDetector(
                             onTap: () {
-                              context.push(LocationPage(
-                                latitude: latitude,
-                                longitude: longitude,
-                              ));
+                              context.push(
+                                LocationPage(
+                                  latitude: latitude,
+                                  longitude: longitude,
+                                ),
+                              );
                             },
-                            child:
-                                Assets.images.seeLocation.image(height: 30.0),
+                            child: Assets.images.seeLocation.image(
+                              height: 30.0,
+                            ),
                           ),
                         ],
                       ),
@@ -411,23 +428,24 @@ class _AttendanceCheckinPageState extends State<AttendanceCheckinPage> {
                           icon: Assets.icons.reverse.svg(width: 48.0),
                         ),
                         const Spacer(),
-                        BlocConsumer<CheckinAttendanceBloc,
-                            CheckinAttendanceState>(
+                        BlocConsumer<
+                          CheckinAttendanceBloc,
+                          CheckinAttendanceState
+                        >(
                           listener: (context, state) {
                             state.maybeWhen(
                               orElse: () {},
                               error: (message) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(message),
-                                  ),
+                                  SnackBar(content: Text(message)),
                                 );
                               },
                               loaded: (responseModel) {
                                 context.pushReplacement(
-                                    const AttendanceSuccessPage(
-                                  status: 'Berhasil Checkin',
-                                ));
+                                  const AttendanceSuccessPage(
+                                    status: 'Berhasil Checkin',
+                                  ),
+                                );
                               },
                             );
                           },
@@ -435,12 +453,10 @@ class _AttendanceCheckinPageState extends State<AttendanceCheckinPage> {
                             return state.maybeWhen(
                               orElse: () {
                                 return IconButton(
-                                  onPressed:
-                                      isFaceRegistered ? _takeAbsen : null,
-                                  icon: const Icon(
-                                    Icons.circle,
-                                    size: 70.0,
-                                  ),
+                                  onPressed: isFaceRegistered
+                                      ? _takeAbsen
+                                      : null,
+                                  icon: const Icon(Icons.circle, size: 70.0),
                                   color: isFaceRegistered
                                       ? AppColors.red
                                       : AppColors.grey,
@@ -453,7 +469,7 @@ class _AttendanceCheckinPageState extends State<AttendanceCheckinPage> {
                           },
                         ),
                         const Spacer(),
-                        const SpaceWidth(48.0)
+                        const SpaceWidth(48.0),
                       ],
                     ),
                   ],

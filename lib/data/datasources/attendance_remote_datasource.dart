@@ -10,7 +10,7 @@ import 'package:flutter_absensi_app/data/models/response/company_response_model.
 
 class AttendanceRemoteDatasource {
   //API get company profile
-  Future<Either<String, CompanyResponseModel>> getCompany() async {
+  Future<Either<String, CompanyResponseModel>> getCompanyProfile() async {
     final authData = await AuthLocalDatasource().getAuthData();
     final uri = Uri.parse('${Variables.baseUrl}/api/company');
     final response = await http.get(
